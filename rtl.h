@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 // TODO; includes
 
@@ -142,6 +142,26 @@ double inline __fastcall rtl_ceil(double n)
 
         FISTP i;
 
+    }
+
+    return i;
+}
+
+extern int32_t inline __fastcall rtl_abs(int32_t x);
+int32_t inline __fastcall rtl_abs(int32_t x)
+{
+    // result prototype.
+    int32_t i;
+   
+    // take opposite of x value.
+    i = -x;
+    
+    // check was result < 0.
+    if (i < 0)
+    {
+        /* shifting result (right). :
+        x is 0x80000000 => 0x7FFFFFFF */  
+        i = x - (((uint32_t)x) >> 31);
     }
 
     return i;
