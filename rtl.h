@@ -5,6 +5,8 @@
 // It took a quite time to calculate and rebuild each function.
 // All mathematical/geometric operations have been simplified and accelerated as much as possible.
 
+#define M_LN2 0.69314718055994530942
+
 using namespace std;
 
 /* ███╗░░░███╗░█████╗░████████╗██╗░░██╗███████╗███╗░░░███╗░█████╗░████████╗██╗░█████╗░░█████╗░██╗░░░░░
@@ -116,8 +118,8 @@ double inline __declspec (naked) __fastcall rtl_sqrt(double n)
     }
 }
 
-extern double inline __fastcall rtl_ceil(double n);
-double inline __fastcall rtl_ceil(double n)
+extern double inline __fastcall rtl_cefl(double n);
+double inline __fastcall rtl_cefl(double n)
 {
     // int prototype.
     int i;
@@ -167,10 +169,53 @@ int32_t inline __fastcall rtl_abs(int32_t x)
     return i;
 }
 
-int maybe_addition_float(float a, float b) {
+// method in polynomial interpolation and approximation theory.
+extern float inline __fastcall rtl_expf(const float x);
+float inline __fastcall rtl_expf(const float x)
+{
+    // check was x == 0.
+    if (x == 0) {
+        return 0;
+    }
 
-}
+    float y = rtl_abs(x);
+    int k = rtl_cefl((y / M_LN2) - 0.5);
+    float r = y - (k * M_LN2);
 
-int maybe_subtraction_float(float a, float b) {
+    // coefficient vector.
+    std::vector<float> coeffs = {
+        1.000000000000000,
+        1.000000000000000,
+        0.500000000000002,
+        0.166666666666680,
+        0.041666666666727,
+        0.008333333333342,
+        0.001388888888388,
+        1.984126978734782e-4,
+        2.480158866546844e-5,
+        2.755734045527853e-6,
+        2.755715675968011e-7,
+        2.504861486483735e-8,
+        2.088459690899721e-9,
+        1.632461784798319e-10 };
 
+    // number taylor.
+    float pn = 1.143364767943110e-11;
+
+    // main part.
+    for (auto i = coeffs.rbegin(); i != coeffs.rend(); i++)
+    {
+        pn = pn * r + *i;
+    }
+
+    // exp.
+    pn *= exp2(k);
+
+    if (x < 0)
+    {
+        return 1 / pn;
+    }
+
+    // return result.
+    return pn;
 }
