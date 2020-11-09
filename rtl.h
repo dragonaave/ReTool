@@ -5,7 +5,7 @@
 // It took a quite time to calculate and rebuild each function.
 // All mathematical/geometric operations have been simplified and accelerated as much as possible.
 
-#define M_LN2 0.69314718055994530942
+#include "definitions.h"
 
 using namespace std;
 
