@@ -6,6 +6,7 @@
 // All mathematical/geometric operations have been simplified and accelerated as much as possible.
 
 #include "definitions.h"
+#include <assert.h>
 
 using namespace std;
 
@@ -178,12 +179,16 @@ float inline __fastcall rtl_expf(const float x)
         return 0;
     }
 
+    // If x < -709 or x > 709, raises an assertion error.
+    // NOTE rndl47: Coz we are using a multiplicative constant less than 12 quickly reduces the amount of accuracy you can obtain as you approach the bounds of.
+    assert(-709 <= x && x <= 709);
+
     float y = rtl_abs(x);
     int k = rtl_cefl((y / M_LN2) - 0.5);
     float r = y - (k * M_LN2);
 
     // coefficient vector.
-    std::vector<float> coeffs = {
+    std::vector<float> coefficients = {
         1.000000000000000,
         1.000000000000000,
         0.500000000000002,
@@ -200,22 +205,23 @@ float inline __fastcall rtl_expf(const float x)
         1.632461784798319e-10 };
 
     // number taylor.
-    float pn = 1.143364767943110e-11;
+    float nt = 1.143364767943110e-11;
 
     // main part.
-    for (auto i = coeffs.rbegin(); i != coeffs.rend(); i++)
+    for (auto i = coefficients.rbegin(); i != coefficients.rend(); i++)
     {
-        pn = pn * r + *i;
+        nt = nt * r + *i;
     }
 
     // exp.
-    pn *= exp2(k);
+    nt *= exp2(k);
 
+    // If the original input x is less than 0.
     if (x < 0)
     {
-        return 1 / pn;
+        return 1 / nt;
     }
 
     // return result.
-    return pn;
+    return nt;
 }
